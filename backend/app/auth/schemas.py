@@ -1,4 +1,12 @@
 from pydantic import BaseModel
 
-class loginSchema(BaseModel):
-    pass
+class UserInfo(BaseModel):
+    username:str
+    name:str
+
+class UserTokenInfo(BaseModel):
+    username:str
+    name:str
+    id:str
+    avatar_url:str
+    
