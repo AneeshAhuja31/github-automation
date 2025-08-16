@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 from auth.schemas import UserInfo
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=True)
 
 MONGODB_URI = os.getenv("MONGODB_URI")
 MONGODB_DATABASE_NAME = os.getenv("MONGODB_DATABASE_NAME")

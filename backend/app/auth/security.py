@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-JWT_EXPIRATION_HOURS = os.getenv("JWT_EXPIRATION_HOURS")
+JWT_EXPIRATION_HOURS = int(os.getenv("JWT_EXPIRATION_HOURS"))
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
 
 async def create_token(usertokeninfo:UserTokenInfo):
