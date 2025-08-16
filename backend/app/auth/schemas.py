@@ -9,4 +9,4 @@ class UserTokenInfo(BaseModel):
     name:str
     id:str
     avatar_url:str
-    
+

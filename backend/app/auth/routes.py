@@ -1,9 +1,9 @@
-from fastapi import APIRouter,HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter,HTTPException,Depends
+from fastapi.responses import RedirectResponse,JSONResponse
 import httpx
 from auth.schemas import UserInfo,UserTokenInfo
-from auth.user_db import create_or_update_user
-from auth.security import create_token
+from auth.user_db import upsert_user,set_user_inactive
+from auth.security import create_token,verify_token
 import os
 from dotenv import load_dotenv
 
@@ -55,7 +55,7 @@ async def callback(code:str):
         name = user_response_json.get("name")
         if not username or not name:
             return RedirectResponse(f"{FRONTEND_URL}/login.html?msg=noname")
-        upsert_response = await create_or_update_user(UserInfo(username=username,name=name))
+        upsert_response = await upsert_user(UserInfo(username=username,name=name))
         # if not upsert_response["upserted"]:
         #     return RedirectResponse(f"{FRONTEND_URL}/login.html?msg=already_upserted")
         usertokeninfo = UserTokenInfo(
@@ -79,3 +79,26 @@ async def callback(code:str):
         print(f"Error in callback: {e}")
         return RedirectResponse(f"{FRONTEND_URL}/login.html?error=server_error")
 
+@router.get("/me")
+async def me(user_data:UserTokenInfo = Depends(verify_token)):
+    if not user_data:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    content = {
+        "username":user_data.username,
+        "name":user_data.name,
+        "id":user_data.id,
+        "avatar_url":user_data.avatar_url
+    }
+    return JSONResponse(content=content)
+
+@router.post("/logout")
+async def logout(userinfo:UserInfo):
+    update_response = await set_user_inactive(userinfo)
+    logout_response = JSONResponse(content={"message":"Logged out successfully"})
+    logout_response.delete_cookie(
+        key="auth_token",
+        httponly=True,
+        secure=False, #change to true in Prod
+        samesite="lax"
+    )
+    return logout_response

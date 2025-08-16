@@ -1,4 +1,20 @@
-document.addEventListener('DOMContentLoaded',function () {
+document.addEventListener('DOMContentLoaded',async function () {
+    try{
+        const res = await fetch("http://localhost:8000/auth/me",{
+            method:"GET",
+            credentials:'include'
+        })
+        if(res.ok){
+            const data = await res.json();
+            if(data.username){
+                window.location.href = 'http://localhost:3000/dashboard.html';
+                return;
+            }
+        }
+    }
+    catch(err){
+        console.error('Auth validation error: ',err);
+    }
     const githubButton = document.querySelector('.github-button')
     if(githubButton){
         githubButton.addEventListener('click', function(e) {

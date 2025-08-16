@@ -37,11 +37,11 @@ class Dashboard {
             searchInput.addEventListener('keydown', this.handleSearchKeydown.bind(this));
         }
 
-        // Sidebar navigation
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            item.addEventListener('click', this.handleNavigation.bind(this));
-        });
+        // // Sidebar navigation
+        // const navItems = document.querySelectorAll('.nav-item');
+        // navItems.forEach(item => {
+        //     item.addEventListener('click', this.handleNavigation.bind(this));
+        // });
 
         // User menu interaction
         const userMenu = document.querySelector('.user-menu');
@@ -158,24 +158,24 @@ class Dashboard {
         }
     }
 
-    // Navigation handling
-    handleNavigation(event) {
-        event.preventDefault();
+    // // Navigation handling
+    // handleNavigation(event) {
+    //     event.preventDefault();
         
-        // Remove active class from all nav items
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-        });
+    //     // Remove active class from all nav items
+    //     document.querySelectorAll('.nav-item').forEach(item => {
+    //         item.classList.remove('active');
+    //     });
         
-        // Add active class to clicked item
-        event.currentTarget.classList.add('active');
+    //     // Add active class to clicked item
+    //     event.currentTarget.classList.add('active');
         
-        const navText = event.currentTarget.querySelector('span').textContent;
-        this.showNotification(`Navigated to ${navText}`, 'info');
+    //     const navText = event.currentTarget.querySelector('span').textContent;
+    //     this.showNotification(`Navigated to ${navText}`, 'info');
         
-        // Simulate page content change
-        this.updatePageContent(navText);
-    }
+    //     // Simulate page content change
+    //     this.updatePageContent(navText);
+    // }
 
     updatePageContent(section) {
         const mainHeader = document.querySelector('.main-header');
