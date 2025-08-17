@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevFlow Dashboard</title>
     <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/sidebar.css" rel="stylesheet">
+    <link href="assets/css/header.css" rel="stylesheet">
 </head>
 <script src="assets/js/dashboard.js"></script>
-<script src="assets/js/dashboard_auth.js"></script>
+<script src="assets/js/checkauth_w_logout.js"></script>
 <body>
     <div class="dashboard">
         <!-- Sidebar -->
@@ -26,7 +28,7 @@
             <nav>
                 <div class="nav-section">
                     <div class="nav-section-title">Main</div>
-                    <a href="#" class="nav-item active">
+                    <a href="http://localhost:3000/dashboard.html" class="nav-item active">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -40,7 +42,7 @@
                         </svg>
                         <span>Projects</span>
                     </a>
-                    <a href="#" class="nav-item">
+                    <a href="http://localhost:3000/repositories.html" class="nav-item">
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -56,7 +58,7 @@
                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span>AI Assistant</span>
+                        <span>AI Jobs</span>
                         <span class="nav-badge">3</span>
                     </a>
                     <a href="#" class="nav-item">
