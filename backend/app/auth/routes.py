@@ -1,8 +1,8 @@
 from fastapi import APIRouter,HTTPException,Depends
 from fastapi.responses import RedirectResponse,JSONResponse
 import httpx
-from auth.schemas import UserInfo,UserTokenInfo
-from auth.user_db import upsert_user,set_user_inactive
+from auth.schemas import UserInfo,UserTokenInfo,UserGithubInfo
+from auth.db import upsert_user,set_user_inactive
 from auth.security import create_token,verify_token
 import os
 from dotenv import load_dotenv
@@ -55,7 +55,7 @@ async def callback(code:str):
         name = user_response_json.get("name")
         if not username or not name:
             return RedirectResponse(f"{FRONTEND_URL}/login.html?msg=noname")
-        upsert_response = await upsert_user(UserInfo(username=username,name=name))
+        upsert_response = await upsert_user(UserGithubInfo(username=username,name=name,access_token=access_token))
         # if not upsert_response["upserted"]:
         #     return RedirectResponse(f"{FRONTEND_URL}/login.html?msg=already_upserted")
         usertokeninfo = UserTokenInfo(

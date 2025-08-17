@@ -1,7 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime
 import os
-from auth.schemas import UserInfo
+from auth.schemas import UserInfo,UserGithubInfo
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
@@ -12,13 +12,14 @@ client = AsyncIOMotorClient(MONGODB_URI)
 db = client[f"{MONGODB_DATABASE_NAME}"]
 user_collection = db["users"]
 
-async def upsert_user(user_data:UserInfo):
+async def upsert_user(user_data:UserGithubInfo):
     username = user_data.username
 
     filter_query = {"username":username}
     user_data_upserted = {
         "username":username,
         "name":user_data.name,
+        "access_token":user_data.access_token,
         "updatedAt":datetime.utcnow(),
         "is_active":True
     }
@@ -40,7 +41,8 @@ async def set_user_inactive(user_data:UserInfo):
         filter_query,
         {
             "$set":{
-                "is_active":False
+                "is_active":False,
+                "access_token":None
             }
         }
     )

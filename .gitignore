@@ -1,2 +1,4 @@
 *.env
 **/__pycache__/
+myrepos.json
+repo_test.py
