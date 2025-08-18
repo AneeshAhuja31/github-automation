@@ -46,13 +46,12 @@ class RepositoryManager {
         this.showLoading();
 
         try {
-            // Call your FastAPI endpoint
             const response = await fetch("http://localhost:8000/user/repos", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                credentials: "include", // Include cookies for authentication
+                credentials: "include", 
             });
 
             if (!response.ok) {
@@ -61,7 +60,6 @@ class RepositoryManager {
 
             const repos = await response.json();
 
-            // Transform GitHub API response to match expected format
             this.repositories = repos.map((repo) => ({
                 id: repo.id,
                 name: repo.name,
@@ -249,7 +247,7 @@ class RepositoryManager {
             Dart: "#00B4AB",
         };
 
-        return languageColors[language] || "#6B7280"; // Default gray color
+        return languageColors[language] || "#6B7280"; 
     }
 
     updatePagination() {
@@ -321,7 +319,6 @@ class RepositoryManager {
     }
 }
 
-// Initialize the repository manager when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
     new RepositoryManager();
 });
