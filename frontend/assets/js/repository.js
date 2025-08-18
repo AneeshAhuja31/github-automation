@@ -46,8 +46,43 @@ class RepositoryManager {
         this.showLoading();
 
         try {
-            // Simulate GitHub API call - replace with actual GitHub API endpoint
-            this.repositories = this.generateMockRepositories();
+            // Call your FastAPI endpoint
+            const response = await fetch("http://localhost:8000/user/repos", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include", // Include cookies for authentication
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const repos = await response.json();
+
+            // Transform GitHub API response to match expected format
+            this.repositories = repos.map((repo) => ({
+                id: repo.id,
+                name: repo.name,
+                fullName: repo.full_name,
+                description: repo.description,
+                private: repo.private,
+                language: {
+                    name: repo.language || "Unknown",
+                    color: this.getLanguageColor(repo.language),
+                },
+                stargazers_count: repo.stargazers_count,
+                forks_count: repo.forks_count,
+                open_issues_count: repo.open_issues_count,
+                updated_at: repo.updated_at,
+                html_url: repo.html_url,
+                owner: {
+                    login: repo.owner.login,
+                    avatar_url: repo.owner.avatar_url,
+                },
+            }));
+
             this.filteredRepos = [...this.repositories];
             this.totalRepos = this.repositories.length;
 
@@ -63,72 +98,6 @@ class RepositoryManager {
         }
     }
 
-    generateMockRepositories() {
-        const languages = [
-            { name: "JavaScript", color: "#f1e05a" },
-            { name: "TypeScript", color: "#2b7489" },
-            { name: "Python", color: "#3572A5" },
-            { name: "Java", color: "#b07219" },
-            { name: "HTML", color: "#e34c26" },
-            { name: "CSS", color: "#563d7c" },
-            { name: "PHP", color: "#4F5D95" },
-            { name: "Ruby", color: "#701516" },
-            { name: "Go", color: "#00ADD8" },
-            { name: "Rust", color: "#dea584" },
-        ];
-
-        const descriptions = [
-            "A modern web application built with React and Node.js",
-            "Machine learning project for data analysis",
-            "RESTful API with authentication and authorization",
-            "Mobile-first responsive website",
-            "E-commerce platform with payment integration",
-            "Real-time chat application using WebSocket",
-            "Task management system with drag-and-drop functionality",
-            "Weather forecast app with geolocation",
-            "Blog platform with markdown support",
-            "Social media dashboard with analytics",
-            "File upload and sharing service",
-            "Authentication microservice",
-            "React component library",
-            "Data visualization toolkit",
-            "Progressive web app for productivity",
-        ];
-
-        const repos = [];
-        for (let i = 1; i <= 150; i++) {
-            const language =
-                languages[Math.floor(Math.random() * languages.length)];
-            const description =
-                descriptions[Math.floor(Math.random() * descriptions.length)];
-            const isPrivate = Math.random() > 0.7;
-
-            repos.push({
-                id: i,
-                name: `project-${i.toString().padStart(3, "0")}`,
-                fullName: `john-smith/project-${i.toString().padStart(3, "0")}`,
-                description: description,
-                private: isPrivate,
-                language: language,
-                stargazers_count: Math.floor(Math.random() * 1000),
-                forks_count: Math.floor(Math.random() * 100),
-                open_issues_count: Math.floor(Math.random() * 20),
-                updated_at: new Date(
-                    Date.now() -
-                        Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000
-                ).toISOString(),
-                html_url: `https://github.com/john-smith/project-${i
-                    .toString()
-                    .padStart(3, "0")}`,
-                owner: {
-                    login: "john-smith",
-                    avatar_url: "https://github.com/github.png",
-                },
-            });
-        }
-        return repos;
-    }
-
     handleSearch(query) {
         const searchTerm = query.toLowerCase().trim();
 
@@ -138,8 +107,10 @@ class RepositoryManager {
             this.filteredRepos = this.repositories.filter(
                 (repo) =>
                     repo.name.toLowerCase().includes(searchTerm) ||
-                    repo.description.toLowerCase().includes(searchTerm) ||
-                    repo.language.name.toLowerCase().includes(searchTerm)
+                    (repo.description &&
+                        repo.description.toLowerCase().includes(searchTerm)) ||
+                    (repo.language.name &&
+                        repo.language.name.toLowerCase().includes(searchTerm))
             );
         }
 
@@ -257,6 +228,28 @@ class RepositoryManager {
         if (diffInSeconds < 31536000)
             return `${Math.floor(diffInSeconds / 2592000)} months ago`;
         return `${Math.floor(diffInSeconds / 31536000)} years ago`;
+    }
+
+    getLanguageColor(language) {
+        const languageColors = {
+            JavaScript: "#f1e05a",
+            TypeScript: "#2b7489",
+            Python: "#3572A5",
+            Java: "#b07219",
+            HTML: "#e34c26",
+            CSS: "#563d7c",
+            PHP: "#4F5D95",
+            Ruby: "#701516",
+            Go: "#00ADD8",
+            Rust: "#dea584",
+            "C++": "#f34b7d",
+            "C#": "#239120",
+            Swift: "#ffac45",
+            Kotlin: "#7F52FF",
+            Dart: "#00B4AB",
+        };
+
+        return languageColors[language] || "#6B7280"; // Default gray color
     }
 
     updatePagination() {

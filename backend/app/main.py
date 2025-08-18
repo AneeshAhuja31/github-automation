@@ -11,6 +11,7 @@ app = FastAPI()
 
 app.include_router(auth_router)
 app.include_router(user_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -18,10 +19,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
 @app.get("/")
 async def index():
     return {"message":"Welcome to Forklift"}
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT"))
-    uvicorn.run("main:app",host="0.0.0.0",port=port)
+    uvicorn.run("main:app",host="0.0.0.0",port=port,reload=True)
