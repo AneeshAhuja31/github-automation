@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from auth.routes import router as auth_router
 from user.routes import router as user_router
+from githubapp.routes import router as githubapp_router
 import uvicorn
 import os
 from dotenv import load_dotenv
@@ -11,6 +12,7 @@ app = FastAPI()
 
 app.include_router(auth_router)
 app.include_router(user_router)
+app.include_router(githubapp_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,6 +25,8 @@ app.add_middleware(
 @app.get("/")
 async def index():
     return {"message":"Welcome to Forklift"}
+
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT"))
