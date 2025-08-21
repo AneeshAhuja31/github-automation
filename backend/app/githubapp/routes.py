@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 router = APIRouter(prefix="/githubapp",tags=["githubapp"])
 
-@router.geT("/callback")
+@router.get("/callback")
 async def callback():
     pass
 
