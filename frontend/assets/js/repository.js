@@ -1,7 +1,7 @@
 class RepositoryManager {
     constructor() {
         this.currentPage = 1;
-        this.perPage = 30;
+        this.perPage = 20;
         this.totalRepos = 0;
         this.repositories = [];
         this.filteredRepos = [];
@@ -10,6 +10,7 @@ class RepositoryManager {
         this.initializeElements();
         this.attachEventListeners();
         this.loadRepositories();
+        this.checkGitHubAppStatus();
     }
 
     initializeElements() {
@@ -144,71 +145,123 @@ class RepositoryManager {
         });
     }
 
+    checkGitHubAppStatus() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const githubAppInstalled = urlParams.get('githubapp_installed');
+        const installationId = urlParams.get('installation_id');
+        
+        if (githubAppInstalled === 'true' && installationId) {
+            this.showSuccessMessage('GitHub App installed successfully!');
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
     createRepositoryCard(repo) {
         const card = document.createElement("div");
         card.className = "repo-card";
-        card.onclick = () => window.open(repo.html_url, "_blank");
-
+        
         const timeAgo = this.getTimeAgo(repo.updated_at);
 
         card.innerHTML = `
-                    <div class="repo-header">
-                        <div>
-                            <div class="repo-name">${repo.name}</div>
-                            <div class="repo-owner">${repo.owner.login}</div>
-                        </div>
-                        <div class="repo-visibility ${
-                            repo.private
-                                ? "visibility-private"
-                                : "visibility-public"
-                        }">
-                            ${repo.private ? "Private" : "Public"}
-                        </div>
+            <div class="repo-header">
+                <div>
+                    <div class="repo-name">${repo.name}</div>
+                    <div class="repo-owner">${repo.owner.login}</div>
+                </div>
+                <div class="repo-actions">
+                    <div class="repo-visibility ${
+                        repo.private ? "visibility-private" : "visibility-public"
+                    }">
+                        ${repo.private ? "Private" : "Public"}
                     </div>
-                    
-                    <div class="repo-description">
-                        ${repo.description || "No description available"}
-                    </div>
-                    
-                    <div class="repo-language">
-                        <div class="language-dot" style="background-color: ${
-                            repo.language.color
-                        }"></div>
-                        <span class="language-name">${repo.language.name}</span>
-                    </div>
-                    
-                    <div class="repo-stats-row">
-                        <div class="stat">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            ${repo.stargazers_count}
-                        </div>
-                        <div class="stat">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
-                                <circle cx="6" cy="6" r="3" stroke="currentColor" stroke-width="2"/>
-                                <circle cx="18" cy="6" r="3" stroke="currentColor" stroke-width="2"/>
-                                <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" stroke="currentColor" stroke-width="2"/>
-                                <path d="M12 12v3" stroke="currentColor" stroke-width="2"/>
-                            </svg>
-                            ${repo.forks_count}
-                        </div>
-                        <div class="stat">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2"/>
-                            </svg>
-                            ${repo.open_issues_count}
-                        </div>
-                    </div>
-                    
-                    <div class="repo-updated">
-                        Updated ${timeAgo}
-                    </div>
-                `;
+                    <button class="install-app-btn" onclick="event.stopPropagation(); repositoryManager.installGitHubApp('${repo.owner.login}', '${repo.name}')">
+                        Install App
+                    </button>
+                </div>
+            </div>
+            
+            <div class="repo-description">
+                ${repo.description || "No description available"}
+            </div>
+            
+            <div class="repo-language">
+                <div class="language-dot" style="background-color: ${repo.language.color}"></div>
+                <span class="language-name">${repo.language.name}</span>
+            </div>
+            
+            <div class="repo-stats-row">
+                <div class="stat">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    ${repo.stargazers_count}
+                </div>
+                <div class="stat">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="6" cy="6" r="3" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="18" cy="6" r="3" stroke="currentColor" stroke-width="2"/>
+                        <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 12v3" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    ${repo.forks_count}
+                </div>
+                <div class="stat">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    ${repo.open_issues_count}
+                </div>
+            </div>
+            
+            <div class="repo-updated">
+                Updated ${timeAgo}
+            </div>
+        `;
+
+        // Make card clickable (except for the install button)
+        card.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('install-app-btn')) {
+                window.open(repo.html_url, "_blank");
+            }
+        });
 
         return card;
+    }
+
+    async installGitHubApp(repoOwner, repoName) {
+        try {
+            const response = await fetch(`http://localhost:8000/githubapp/install/${repoOwner}/${repoName}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get install URL');
+            }
+
+            const data = await response.json();
+            
+            // Open GitHub App installation page
+            window.open(data.install_url, '_blank');
+            
+        } catch (error) {
+            console.error('Error installing GitHub App:', error);
+            this.showError('Failed to install GitHub App');
+        }
+    }
+    showSuccessMessage(message) {
+        // Create success notification
+        const notification = document.createElement('div');
+        notification.className = 'notification success';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
     }
 
     getTimeAgo(dateString) {
@@ -319,6 +372,7 @@ class RepositoryManager {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    new RepositoryManager();
+let repositoryManager;
+document.addEventListener('DOMContentLoaded', () => {
+    repositoryManager = new RepositoryManager();
 });

@@ -12,28 +12,27 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 
 router = APIRouter(prefix="/githubapp",tags=["githubapp"])
 
-@router.get("/callback")
-async def callback(request:Request):
-    try:
-        installation_id = request.query_params.get("installation_id")
-        setup_action = request.query_params.get("setup_action")
+# @router.get("/callback")
+# async def callback(request:Request):
+#     try:
+#         installation_id = request.query_params.get("installation_id")
+#         setup_action = request.query_params.get("setup_action")
 
-        if not installation_id:
-            return RedirectResponse(f"{FRONTEND_URL}/repositories.html?error=token_failed")
+#         if not installation_id:
+#             return RedirectResponse(f"{FRONTEND_URL}/repositories.html?error=token_failed")
         
-        return RedirectResponse(f"{FRONTEND_URL}/repositories.html?githubapp_installed=true&installation_id={installation_id}")
+#         return RedirectResponse(f"{FRONTEND_URL}/repositories.html?githubapp_installed=true&installation_id={installation_id}")
 
-    except Exception as e:
-        print(f"Error in GitHub App callback: {e}")
-        return RedirectResponse(f"{FRONTEND_URL}/repositories.html?error=app_callback_failed")
+#     except Exception as e:
+#         print(f"Error in GitHub App callback: {e}")
+#         return RedirectResponse(f"{FRONTEND_URL}/repositories.html?error=app_callback_failed")
+    
 @router.get("/install/{repo_owner}/{repo_name}")
 async def install_app_on_repo(repo_owner: str, repo_name: str, user_data: UserTokenInfo = Depends(verify_token)):
-    """Generate GitHub App installation URL for a specific repository"""
     try:
         install_url = (
-            f"https://github.com/apps/YOUR_APP_NAME/installations/new"
+            f"https://github.com/apps/ForkliftBot/installations/new"
             f"?suggested_target_id={repo_owner}"
-            f"&repository_ids[]={repo_name}"
             f"&state={user_data.username}"
         )
         
