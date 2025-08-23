@@ -1,7 +1,7 @@
 from fastapi import APIRouter,Request,HTTPException,Depends
 from fastapi.responses import RedirectResponse,JSONResponse
-#from githubapp.services import generate_jwt_for_githubapp_access,get_installation_token
-from githubapp.db import addupdate_installation_id
+from githubapp.services import generate_jwt_for_githubapp_access,get_githubapp_installation_token,get_repos_with_app_access
+from githubapp.db import addupdate_installation_id,get_installation_id
 from auth.security import verify_token
 from auth.schemas import UserTokenInfo
 from user.db import get_user_access_token
@@ -51,6 +51,14 @@ async def install_app_on_repo(repo_owner: str, user_data: UserTokenInfo = Depend
     except Exception as e:
         print(f"Error generating install URL: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate install URL")
+
+@router.get("/get-repos/{username}")
+async def get_repos(username:str):
+    installation_id = await get_installation_id(username)
+    jwt_token = await generate_jwt_for_githubapp_access()
+    github_app_installation_token = await get_githubapp_installation_token(installation_id,jwt_token)
+    repos = await get_repos_with_app_access(github_app_installation_token)
+    return JSONResponse({"repositories":repos})
 
 @router.post("/webhooks/github")
 async def github_webhook():

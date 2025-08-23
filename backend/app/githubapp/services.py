@@ -30,11 +30,19 @@ async def get_githubapp_installation_token(installation_id:str,token:str):
     github_app_installation_token = response_json["token"]
     return github_app_installation_token
 
-async def get_repos_with_app_access(github_app_installation_token:str):
+async def get_repos_with_app_access(github_app_installation_token:str) -> list:
     headers = {
         "Authorization": f"Bearer {github_app_installation_token}",
         "Accept": "application/vnd.github+json"
     }
     async with httpx.AsyncClient() as client:
         response = await client.get("https://api.github.com/installation/repositories",headers=headers)
-
+    repositories = response.json()["repositories"]
+    
+    cleaned_repositories = [
+        {
+            "full_name":repo["full_name"],
+            "name":repo["name"]
+        }  for repo in repositories
+    ]
+    return cleaned_repositories
