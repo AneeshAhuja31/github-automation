@@ -6,7 +6,7 @@ from auth.schemas import UserTokenInfo
 from datetime import datetime
 import os
 from dotenv import load_dotenv
-load_dotenv(override=True)
+load_dotenv()
 
 MONGODB_URI = os.getenv("MONGODB_URI")
 MONGODB_DATABASE_NAME = os.getenv("MONGODB_DATABASE_NAME")

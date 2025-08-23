@@ -233,7 +233,7 @@ class RepositoryManager {
 
     async installGitHubApp(repoOwner, repoName) {
         try {
-            const response = await fetch(`http://localhost:8000/githubapp/install/${repoOwner}/${repoName}`, {
+            const response = await fetch(`http://localhost:8000/githubapp/install/${repoOwner}`, {
                 method: 'GET',
                 credentials: 'include'
             });
