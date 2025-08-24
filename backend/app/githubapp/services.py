@@ -3,6 +3,7 @@ import jwt
 import os
 import httpx
 from dotenv import load_dotenv
+from githubapp.db import delete_installation_id
 load_dotenv()
 
 GITHUB_APP_ID = os.getenv("GITHUB_APP_ID")
@@ -19,13 +20,18 @@ async def generate_jwt_for_githubapp_access():
     }
     return jwt.encode(payload,GITHUB_PRIVATE_KEY,algorithm="RS256")
 
-async def get_githubapp_installation_token(installation_id:str,token:str):
+async def get_githubapp_installation_token(installation_id:str,token:str,username:str):
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github+json"
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(f"https://api.github.com/app/installations/{installation_id}/access_tokens",headers=headers)
+        if response.status_code >= 400 and response.status_code<=500:
+            print(response.status_code)
+            print(response.json())
+            del_installation_id_response = await delete_installation_id(username)
+            return None
     response_json = response.json()
     github_app_installation_token = response_json["token"]
     return github_app_installation_token
@@ -36,13 +42,13 @@ async def get_repos_with_app_access(github_app_installation_token:str) -> list:
         "Accept": "application/vnd.github+json"
     }
     async with httpx.AsyncClient() as client:
-        response = await client.get("https://api.github.com/installation/repositories",headers=headers)
+        response = await client.get("https://api.github.com/installation/repositories?per_page=100",headers=headers)
     repositories = response.json()["repositories"]
-    
     cleaned_repositories = [
         {
             "full_name":repo["full_name"],
             "name":repo["name"]
         }  for repo in repositories
     ]
+    print(len(repositories))
     return cleaned_repositories

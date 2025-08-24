@@ -15,8 +15,7 @@ client = AsyncIOMotorClient(MONGODB_URI)
 db = client[f"{MONGODB_DATABASE_NAME}"]
 user_collection = db["users"]
 
-async def get_user_access_token(request:Request) -> str:
-    user_token_info:UserTokenInfo = await verify_token(request)
+async def get_user_access_token(user_token_info:UserTokenInfo) -> str:
     access_token_response = await user_collection.find_one(
         {
             "username":user_token_info.username

@@ -483,3 +483,12 @@ body {
         justify-content: space-between;
     }
 }
+
+.repo-card.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.repo-card.disabled .install-app-btn {
+    pointer-events: auto;
+}

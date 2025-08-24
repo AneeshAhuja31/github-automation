@@ -56,9 +56,9 @@ async def install_app_on_repo(repo_owner: str, user_data: UserTokenInfo = Depend
 async def get_repos(username:str):
     installation_id = await get_installation_id(username)
     jwt_token = await generate_jwt_for_githubapp_access()
-    github_app_installation_token = await get_githubapp_installation_token(installation_id,jwt_token)
+    github_app_installation_token = await get_githubapp_installation_token(installation_id,jwt_token,username)
     repos = await get_repos_with_app_access(github_app_installation_token)
-    return JSONResponse({"repositories":repos})
+    return JSONResponse(repos)
 
 @router.post("/webhooks/github")
 async def github_webhook():

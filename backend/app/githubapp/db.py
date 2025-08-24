@@ -11,6 +11,18 @@ client = AsyncIOMotorClient(MONGODB_URI)
 db = client[f"{MONGODB_DATABASE_NAME}"]
 user_collection = db["users"]
 
+async def delete_installation_id(username:str):
+    filter_query = {"username":username}
+    update_query = {
+        "$unset":{
+            "installation_id":""
+        }
+    }
+    find_and_delete_response = await user_collection.update_one(filter_query,update_query)
+    if find_and_delete_response.modified_count > 0:
+        return {"success":True}
+    return {"success":False}
+
 async def addupdate_installation_id(user_data:dict):
     filter_query = {"username":user_data["username"]}
     update_query = {
@@ -26,5 +38,7 @@ async def get_installation_id(username:str):
     find_response = await user_collection.find_one({"username":username})
     if not find_response:
         raise HTTPException(status_code=404, detail="User not found")
-    return find_response.get("installation_id")
+    if "installation_id" in find_response:
+        return find_response.get("installation_id")
+    return None
     
