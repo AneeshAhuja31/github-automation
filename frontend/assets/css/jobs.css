@@ -280,7 +280,7 @@
     min-height: 100px;
 }
 
-.repo-list {
+/* .repo-list {
     max-height: 300px;
     overflow-y: auto;
     border: 1px solid var(--border-color);
@@ -323,8 +323,75 @@
 .repo-lang {
     font-size: 12px;
     color: var(--text-secondary);
+} */
+/* Add to your jobs.css file */
+.repo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
+.repo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.repo-item:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--primary-color);
+}
+
+.repo-info {
+    flex: 1;
+}
+
+.repo-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.repo-full-name {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.repo-arrow {
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+}
+
+.repo-item:hover .repo-arrow {
+    transform: translateX(2px);
+}
+
+.repo-loading, .repo-error, .no-repos {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 .submit-job {
     width: 100%;
     padding: 12px 24px;
