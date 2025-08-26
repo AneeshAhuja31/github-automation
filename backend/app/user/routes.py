@@ -1,4 +1,4 @@
-from fastapi import APIRouter,HTTPException,Request
+from fastapi import APIRouter,HTTPException,Request,Depends
 from user.db import get_user_access_token
 from auth.security import verify_token
 from auth.schemas import UserTokenInfo
@@ -12,6 +12,9 @@ async def get_user_repos(request:Request):
     try:
         user_token_info:UserTokenInfo = await verify_token(request)
         access_token = await get_user_access_token(user_token_info)
+        print("///////////////////////")
+        print(access_token)
+        print("///////////////////////")
         async with httpx.AsyncClient() as client:
             repo_response = await client.get(
                 "https://api.github.com/user/repos",
@@ -50,3 +53,39 @@ async def get_user_repos(request:Request):
         raise HTTPException(status_code=500, detail=f"Error connecting to GitHub API: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.get("/get-issues/{repo}")
+async def get_issues(repo:str,user_token_info:UserTokenInfo = Depends(verify_token)):
+    try:
+        username = user_token_info.username
+        access_token = await get_user_access_token(user_token_info)
+        
+        async with httpx.AsyncClient() as client:
+            issue_response = await client.get(
+                f"https://api.github.com/repos/{username}/{repo}/issues",
+                headers={
+                    "Authorization": f"Bearer {access_token}"
+                }
+            )
+        if issue_response.status_code != 200:
+            raise HTTPException(
+                status_code=issue_response.status_code,
+                detail=f"Failed to fetch issues for {repo} from GitHub"
+            )
+        return issue_response
+        
+    except Exception as e:
+        raise HTTPException(status_code=500,detail="Error fetching issues")
+    
+@router.get("/check-repo/{repo}")
+async def check_if_user_exist(repo:str,user_token_info:UserTokenInfo = Depends(verify_token)):
+    username = user_token_info.username
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://api.github.com/repos/{username}/{repo}")
+    
+    if response.status_code == 200:
+        return {"exists":True,"message":"Repository exists!"}
+    elif response.status_code == 404:
+        return {"exists":False,"message":"Repository doesnt exist!"}
+    else:
+        raise HTTPException(status_code=response.status_code,detail="GitHub API error")

@@ -41,7 +41,6 @@ class AIJobsManager {
         this.elements.overlay.classList.remove("active");
     }
 
-
     async loadRepositoriesWithApp() {
         if (this.isLoading) return;
 
@@ -49,9 +48,9 @@ class AIJobsManager {
         this.showRepoLoading();
 
         try {
-            const userString = localStorage.getItem("user")
+            const userString = localStorage.getItem("user");
             const user = JSON.parse(userString);
-            console.log(user)
+            console.log(user);
             const username = user.username;
             const response = await fetch(
                 `http://localhost:8000/githubapp/get-repos/${username}`,
@@ -108,7 +107,10 @@ class AIJobsManager {
             `;
 
             repoItem.addEventListener("click", () => {
-                window.open(`https://github.com/${repo.full_name}`, "_blank");
+                window.open(
+                    `create-jobs.html?r=${encodeURIComponent(repo.full_name.split('/')[1])}`,
+                    "_blank"
+                );
             });
 
             this.elements.repoList.appendChild(repoItem);
@@ -131,8 +133,6 @@ class AIJobsManager {
             </div>
         `;
     }
-
-    
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -24,6 +24,7 @@ async def create_token(usertokeninfo:UserTokenInfo):
 
 async def verify_token(request:Request) -> UserTokenInfo:
     token = request.cookies.get("auth_token")
+    print(token)
     if not token:
         raise HTTPException(status_code=401,detail="Missing auth token")
     try:
