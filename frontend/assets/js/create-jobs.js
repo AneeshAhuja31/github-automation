@@ -114,52 +114,13 @@ async function loadRepositoryInfo() {
 
 async function loadIssues() {
     try {
-        // Simulate API call to get issues
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
-        // Mock issues data
-        issues = [
-            {
-                id: 1,
-                number: 15,
-                title: "Fix responsive design on mobile devices",
-                body: "The layout breaks on screens smaller than 768px. Need to improve mobile responsiveness.",
-                labels: [
-                    { name: "bug", color: "d73a4a" },
-                    { name: "mobile", color: "0075ca" },
-                ],
-            },
-            {
-                id: 2,
-                number: 12,
-                title: "Add dark mode support",
-                body: "Implement dark mode toggle functionality across the application. Should persist user preference.",
-                labels: [
-                    { name: "enhancement", color: "a2eeef" },
-                    { name: "ui/ux", color: "d4c5f9" },
-                ],
-            },
-            {
-                id: 3,
-                number: 8,
-                title: "Performance optimization for large datasets",
-                body: "The application becomes slow when handling datasets with more than 1000 items. Need to implement pagination or virtualization.",
-                labels: [
-                    { name: "performance", color: "fbca04" },
-                    { name: "optimization", color: "0e8a16" },
-                ],
-            },
-            {
-                id: 4,
-                number: 5,
-                title: "Add unit tests for authentication module",
-                body: "The authentication module lacks proper test coverage. Need to add comprehensive unit tests.",
-                labels: [
-                    { name: "testing", color: "f9d0c4" },
-                    { name: "auth", color: "b60205" },
-                ],
-            },
-        ];
+        const res = await fetch(`http://localhost:8000/user/get-issues/${repoName}`,{
+            method:'GET',
+            credentials:'include'
+        })
+        if(res.status == 200){
+            issues = await res.json()
+        }
 
         displayIssues(issues);
     } catch (error) {
@@ -170,7 +131,7 @@ async function loadIssues() {
 function displayIssues(issuesToShow) {
     const issuesList = document.getElementById("issuesList");
 
-    if (issuesToShow.length === 0) {
+    if (!issuesToShow || issuesToShow.length === 0) {
         issuesList.innerHTML = '<div class="loading">No issues found</div>';
         return;
     }
@@ -178,20 +139,16 @@ function displayIssues(issuesToShow) {
     issuesList.innerHTML = issuesToShow
         .map(
             (issue) => `
-                <div class="issue-item" data-issue-id="${
-                    issue.id
-                }" onclick="selectIssue(${issue.id})">
+                <div class="issue-item" data-issue-id="${issue.id}" onclick="selectIssue(${issue.id})">
                     <input type="checkbox" class="issue-checkbox" ${
-                        selectedIssue && selectedIssue.id === issue.id
-                            ? "checked"
-                            : ""
+                        selectedIssue && selectedIssue.id === issue.id ? "checked" : ""
                     }>
                     <div class="issue-content">
                         <div class="issue-title">${issue.title}</div>
                         <div class="issue-number">#${issue.number}</div>
-                        <div class="issue-body">${issue.body}</div>
+                        <div class="issue-body">${issue.body || "No description provided."}</div>
                         ${
-                            issue.labels.length > 0
+                            issue.labels && issue.labels.length > 0
                                 ? `
                             <div class="issue-labels">
                                 ${issue.labels

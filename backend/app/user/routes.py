@@ -17,7 +17,7 @@ async def get_user_repos(request:Request):
         print("///////////////////////")
         async with httpx.AsyncClient() as client:
             repo_response = await client.get(
-                "https://api.github.com/user/repos",
+                "https://api.github.com/user/repos?per_page=100",
                 headers={
                     "Authorization": f"Bearer {access_token}"
                 }
@@ -67,14 +67,26 @@ async def get_issues(repo:str,user_token_info:UserTokenInfo = Depends(verify_tok
                     "Authorization": f"Bearer {access_token}"
                 }
             )
+        print("[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]")
+        print(access_token)
+        print("[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]")
         if issue_response.status_code != 200:
             raise HTTPException(
                 status_code=issue_response.status_code,
                 detail=f"Failed to fetch issues for {repo} from GitHub"
             )
-        return issue_response
+        try:
+            with open("issue.json","w") as f:
+                import json
+                json.dump(issue_response.json(), f)
+        except Exception as e:
+            print("herererere")
+        
+        print(issue_response.json())
+        return issue_response.json()
         
     except Exception as e:
+        
         raise HTTPException(status_code=500,detail=f"{e}")
     
 @router.get("/check-repo/{username}/{repo}")

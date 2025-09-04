@@ -1,7 +1,7 @@
 class RepositoryManager {
     constructor() {
         this.currentPage = 1;
-        this.perPage = 20;
+        this.perPage = 30;
         this.totalRepos = 0;
         this.repositories = [];
         this.filteredRepos = [];
