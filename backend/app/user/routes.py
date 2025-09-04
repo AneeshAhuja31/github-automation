@@ -100,3 +100,23 @@ async def check_if_user_exist(username:str,repo:str):
         return {"exists":False,"message":"Repository doesnt exist!"}
     else:
         raise HTTPException(status_code=response.status_code,detail="GitHub API error")
+
+@router.get("/get-branches/{repo}")
+async def get_branch(repo:str,user_token_info:UserTokenInfo = Depends(verify_token)):
+    try:
+        username = user_token_info.username
+        access_token = await get_user_access_token(user_token_info)
+        async with httpx.AsyncClient() as client:
+            branch_response = await client.get(f"https://api.github.com/repos/{username}/{repo}/branches",
+                headers={
+                    "Authorization": f"Bearer {access_token}"
+                }
+            )
+        if branch_response.status_code != 200:
+                raise HTTPException(
+                    status_code=branch_response.status_code,
+                    detail=f"Failed to fetch issues for {repo} from GitHub"
+                )
+        return branch_response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f"{e}")
