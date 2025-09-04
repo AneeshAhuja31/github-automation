@@ -1,6 +1,8 @@
 let currentStep = 1;
 let selectedIssue = null;
 let selectedFiles = [];
+let branches = [];
+let selectedBranch = null;
 let repoName = "";
 let repoData = null;
 let issues = [];
@@ -211,6 +213,70 @@ function filterIssues(searchTerm) {
     );
     displayIssues(filteredIssues);
 }
+async function loadBranches() {
+    try {
+        const res = await fetch(`http://localhost:8000/user/get-branches/${repoName}`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        if (res.status === 200) {
+            branches = await res.json();
+        }
+
+        displayBranches(branches);
+    } catch (error) {
+        showError("Failed to load branches");
+    }
+}
+
+function displayBranches(branchesToShow) {
+    const branchList = document.getElementById("branchList");
+
+    if (!branchesToShow || branchesToShow.length === 0) {
+        branchList.innerHTML = '<div class="loading">No branches found</div>';
+        return;
+    }
+
+    branchList.innerHTML = branchesToShow
+        .map(
+            (branch) => `
+                <div class="issue-item" data-branch-name="${branch.name}" onclick="selectBranch('${branch.name}')">
+                    <input type="radio" name="branch" class="branch-radio" ${
+                        selectedBranch === branch.name ? "checked" : ""
+                    }>
+                    <div class="issue-content">
+                        <div class="issue-title">${branch.name}</div>
+                    </div>
+                </div>
+            `
+        )
+        .join("");
+}
+
+function selectBranch(branchName) {
+    selectedBranch = branchName;
+
+    // Update UI
+    document.querySelectorAll(".issue-item").forEach((item) => {
+        const radio = item.querySelector(".branch-radio");
+        if (radio) { // Ensure the radio element exists
+            if (item.dataset.branchName === branchName) {
+                item.classList.add("selected");
+                radio.checked = true;
+            } else {
+                item.classList.remove("selected");
+                radio.checked = false;
+            }
+        }
+    });
+
+    // Enable the "Next" button for Step 2
+    const step3Next = document.getElementById("step3Next");
+    if (step3Next) {
+        step3Next.disabled = false;
+    }
+}
 
 async function loadFiles() {
     try {
@@ -369,36 +435,52 @@ function updateRemoveButtons() {
         button.style.display = commandGroups.length > 1 ? "block" : "none";
     });
 }
-
 function nextStep() {
     if (currentStep === 1) {
-        // Load files for step 2
+        // Navigate to Step 2: Select Branch
         document.getElementById("step1").style.display = "none";
         document.getElementById("step2").style.display = "block";
         currentStep = 2;
         updateProgressSteps();
-        loadFiles();
+        loadBranches(); // Load branches for Step 2
     } else if (currentStep === 2) {
+        // Navigate to Step 3: Select Files
         document.getElementById("step2").style.display = "none";
         document.getElementById("step3").style.display = "block";
         currentStep = 3;
+        updateProgressSteps();
+        loadFiles(); // Load files for Step 3
+    } else if (currentStep === 3) {
+        // Navigate to Step 4: Run Commands
+        document.getElementById("step3").style.display = "none";
+        document.getElementById("step4").style.display = "block";
+        currentStep = 4;
         updateProgressSteps();
     }
 }
 
 function previousStep() {
     if (currentStep === 2) {
+        // Navigate back to Step 1: Select Issue
         document.getElementById("step2").style.display = "none";
         document.getElementById("step1").style.display = "block";
         currentStep = 1;
         updateProgressSteps();
     } else if (currentStep === 3) {
+        // Navigate back to Step 2: Select Branch
         document.getElementById("step3").style.display = "none";
         document.getElementById("step2").style.display = "block";
         currentStep = 2;
         updateProgressSteps();
+    } else if (currentStep === 4) {
+        // Navigate back to Step 3: Select Files
+        document.getElementById("step4").style.display = "none";
+        document.getElementById("step3").style.display = "block";
+        currentStep = 3;
+        updateProgressSteps();
     }
 }
+
 
 function updateProgressSteps() {
     document.querySelectorAll(".progress-step").forEach((step) => {

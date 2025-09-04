@@ -407,7 +407,84 @@ body {
     background: var(--bg-tertiary);
     color: var(--text-secondary);
 }
+/* Style for the branch selection step */
+#step2 .form-header {
+    padding: 32px 32px 0;
+    margin-bottom: 32px;
+}
 
+#step2 .form-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+#step2 .form-subtitle {
+    color: var(--text-secondary);
+}
+
+#step2 .form-content {
+    padding: 0 32px;
+}
+
+#step2 .search-box {
+    margin-bottom: 16px;
+}
+
+#step2 .search-input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+#step2 .search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: var(--bg-primary);
+}
+
+#step2 .issue-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-top: 16px;
+}
+
+#step2 .issue-item {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+#step2 .issue-item:hover {
+    background: var(--bg-secondary);
+}
+
+#step2 .issue-item.selected {
+    background: #dbeafe;
+    border-color: var(--primary-color);
+}
+
+#step2 .issue-item:last-child {
+    border-bottom: none;
+}
+
+#step2 .issue-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
 /* File Tree */
 .file-tree {
     max-height: 400px;

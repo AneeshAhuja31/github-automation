@@ -62,12 +62,19 @@
                         <li class="progress-step" data-step="2">
                             <div class="step-indicator">2</div>
                             <div class="step-info">
-                                <div class="step-title">Select Files</div>
-                                <div class="step-description">Choose relevant files</div>
+                                <div class="step-title">Select Branch</div>
+                                <div class="step-description">Choose a branch</div>
                             </div>
                         </li>
                         <li class="progress-step" data-step="3">
                             <div class="step-indicator">3</div>
+                            <div class="step-info">
+                                <div class="step-title">Select Files</div>
+                                <div class="step-description">Choose relevant files</div>
+                            </div>
+                        </li>
+                        <li class="progress-step" data-step="4">
+                            <div class="step-indicator">4</div>
                             <div class="step-info">
                                 <div class="step-title">Run Commands</div>
                                 <div class="step-description">Configure execution commands</div>
@@ -140,9 +147,48 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- Step 2: File Selection -->
+                    <!---->
                     <div id="step2" class="step-content" style="display: none;">
+                        <div class="form-header">
+                            <h1 class="form-title">Select Branch</h1>
+                            <p class="form-subtitle">Choose a branch for this task</p>
+                        </div>
+
+                        <div class="form-content">
+                            <div class="search-box">
+                                <div class="search-container">
+                                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <path d="m21 21-4.35-4.35"/>
+                                    </svg>
+                                    <input type="text" id="branchSearch" class="search-input" placeholder="Search branches...">
+                                </div>
+                            </div>
+                            <div id="branchList" class="issue-list">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                    Loading branches...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-footer">
+                            <button class="btn btn-secondary" onclick="previousStep()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="m15 18-6-6 6-6"/>
+                                </svg>
+                                Previous
+                            </button>
+                            <button class="btn btn-primary" onclick="nextStep()" id="step3Next" disabled>
+                                Next
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="m9 18 6-6-6-6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Step 3: File Selection -->
+                    <div id="step3" class="step-content" style="display: none;">
                         <div class="form-header">
                             <h1 class="form-title">Select Files</h1>
                             <p class="form-subtitle">Choose files relevant to this task</p>
@@ -182,8 +228,8 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Run Commands -->
-                    <div id="step3" class="step-content" style="display: none;">
+                    <!-- Step 4: Run Commands -->
+                    <div id="step4" class="step-content" style="display: none;">
                         <div class="form-header">
                             <h1 class="form-title">Run Commands</h1>
                             <p class="form-subtitle">Configure commands to execute for this job</p>
