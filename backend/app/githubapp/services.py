@@ -65,11 +65,16 @@ async def get_repos_with_app_access(github_app_installation_token:str) -> list:
     print(len(repositories))
     return cleaned_repositories
 
-async def check_app_installed_on_repo(github_app_installation_token:str,owner:str,repo:str) -> bool:
+async def is_repo_installed(installation_token: str, owner: str, repo: str) -> bool:
     headers = {
-        "Authorization": f"Bearer {github_app_installation_token}",
+        "Authorization": f"Bearer {installation_token}",
         "Accept": "application/vnd.github+json"
     }
     async with httpx.AsyncClient() as client:
-        response = await client.get(f"https://api.github.com/repos/{owner}/{repo}/installation",headers=headers)
-    return response.status_code == 200
+        response = await client.get("https://api.github.com/installation/repositories?per_page=100", headers=headers)
+    if response.status_code != 200:
+        return False
+    repos = response.json().get("repositories", [])
+    full_name = f"{owner}/{repo}"
+    return any(r.get("full_name") == full_name for r in repos)
+

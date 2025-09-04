@@ -15,7 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
         showError("Repository name is required in URL parameters");
         return;
     }
-    
+    try{
+        const res = await fetch("http://localhost:8000")
+    }
 
     loadRepositoryInfo();
     setupEventListeners();

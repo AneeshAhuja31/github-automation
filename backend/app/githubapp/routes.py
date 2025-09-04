@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Request,HTTPException,Depends
 from fastapi.responses import RedirectResponse,JSONResponse
-from githubapp.services import generate_jwt_for_githubapp_access,get_githubapp_installation_token,get_repos_with_app_access
+from githubapp.services import generate_jwt_for_githubapp_access,get_githubapp_installation_token,get_repos_with_app_access,is_repo_installed
 from githubapp.db import addupdate_installation_id,get_installation_id
 from auth.security import verify_token
 from auth.schemas import UserTokenInfo
@@ -63,3 +63,13 @@ async def get_repos(username:str):
 @router.post("/webhooks/github")
 async def github_webhook():
     pass
+
+@router.get("/check-repo/{username}/{repo}")
+async def check_if_app_installated_on_repo(username:str,repo:str):
+    installation_id = await get_installation_id(username)
+    jwt_token = await generate_jwt_for_githubapp_access()
+    github_app_installation_token = await get_githubapp_installation_token(installation_id,jwt_token,username)
+    check_if_app_installed = await is_repo_installed(github_app_installation_token,username,repo)
+    if not check_if_app_installed:
+        raise HTTPException(status_code=401,detail="Github app not installed on repo")
+    return JSONResponse(status_code=200,content={"success":True})
