@@ -120,3 +120,23 @@ async def get_branch(repo:str,user_token_info:UserTokenInfo = Depends(verify_tok
         return branch_response.json()
     except Exception as e:
         raise HTTPException(status_code=500,detail=f"{e}")
+
+@router.get("/get-files/{branch}/{repo}")
+async def get_files(branch:str,repo:str,user_token_info:UserTokenInfo = Depends(verify_token)):
+    try:
+        username = user_token_info.username
+        access_token = await get_user_access_token(user_token_info)
+        async with httpx.AsyncClient() as client:
+            files_response = await client.get(f"https://api.github.com/repos/{username}/{repo}/git/trees/{branch}?recursive=1",
+                    headers={
+                        "Authorization": f"Bearer {access_token}"
+                    }
+                )
+            if files_response.status_code != 200:
+                raise HTTPException(
+                    status_code=files_response.status_code,
+                    detail=f"Failed to fetch issues for {repo} from GitHub"
+                )
+            return files_response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f"{e}")
