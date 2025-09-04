@@ -7,7 +7,7 @@ let issues = [];
 let files = [];
 let commands = [];
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     const urlParams = new URLSearchParams(window.location.search);
     repoName = urlParams.get("r");
 
@@ -15,8 +15,33 @@ document.addEventListener("DOMContentLoaded", function () {
         showError("Repository name is required in URL parameters");
         return;
     }
-    try{
-        const res = await fetch("http://localhost:8000")
+
+    try {
+        const userStr = localStorage.getItem("user");
+        if (!userStr) {
+            throw new Error("User not found in localStorage");
+        }
+
+        const owner = JSON.parse(userStr)["username"];
+        const res = await fetch(
+            `http://localhost:8000/githubapp/check-repo/${owner}/${repoName}`,
+            {
+                method: "GET",
+            }
+        );
+
+        if (res.status === 200) {
+            console.log("app installed")
+        } else if (res.status === 401) {
+            showErrorPage();
+            return;
+        } else {
+            showError("Failed to verify repository status.");
+            return;
+        }
+    } catch (err) {
+        console.error("Error confirming if app installed on repo:", err);
+        showError("An error occurred while checking repository status.");
     }
 
     loadRepositoryInfo();
@@ -497,15 +522,24 @@ async function createJob() {
     }
 }
 
+function showErrorPage() {
+    const mainContent = document.getElementById("mainContent");
+    const errorPage = document.getElementById("errorPage");
+
+    if (mainContent && errorPage) {
+        mainContent.style.display = "none"; 
+        errorPage.style.display = "flex"; 
+    } else {
+        console.error("Error: Missing mainContent or errorPage element.");
+    }
+}
+
 function showError(message) {
-    const errorDiv = document.createElement("div");
-    errorDiv.className = "error";
-    errorDiv.textContent = message;
-
-    const container = document.querySelector(".form-content");
-    container.insertBefore(errorDiv, container.firstChild);
-
-    setTimeout(() => {
-        errorDiv.remove();
-    }, 5000);
+    const errorContainer = document.getElementById("errorContainer");
+    if (errorContainer) {
+        errorContainer.textContent = message;
+        errorContainer.style.display = "block";
+    } else {
+        alert(message); 
+    }
 }

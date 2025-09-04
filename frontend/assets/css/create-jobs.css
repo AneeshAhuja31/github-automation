@@ -44,14 +44,22 @@ body {
     margin: 0 auto;
     padding: 24px;
 }
-
-/* Header */
 .header {
     background-color: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
     padding: 16px 0;
     margin-bottom: 32px;
+    position: sticky; /* Make the header sticky */
+    top: 0; /* Stick to the top of the viewport */
+    z-index: 1000; /* Ensure it stays above other elements */
 }
+/* Header */
+/* .header {
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 0;
+    margin-bottom: 32px;
+} */
 
 .header-content {
     display: flex;
@@ -100,10 +108,17 @@ body {
 /* Main Content */
 .main-content {
     display: grid;
+    grid-template-columns: 300px 1fr; /* Sidebar and form layout */
+    gap: 32px;
+    align-items: start;
+    margin-top: 16px; /* Add spacing below the header */
+}
+/* .main-content {
+    display: grid;
     grid-template-columns: 300px 1fr;
     gap: 32px;
     align-items: start;
-}
+} */
 
 /* Progress Sidebar */
 .progress-sidebar {
@@ -111,9 +126,18 @@ body {
     border-radius: var(--radius-lg);
     padding: 24px;
     box-shadow: var(--shadow-sm);
+    position: sticky; /* Make the sidebar sticky */
+    top: 80px; /* Adjust to account for the header height */
+    z-index: 900; /* Ensure it stays below the header */
+}
+/* .progress-sidebar {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
     position: sticky;
     top: 24px;
-}
+} */
 
 .repo-info {
     margin-bottom: 24px;
