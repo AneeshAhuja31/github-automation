@@ -270,6 +270,7 @@ body {
 }
 
 .form-footer {
+    margin-top: 20px;
     padding: 24px 32px;
     border-top: 1px solid var(--border-color);
     display: flex;

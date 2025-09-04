@@ -223,7 +223,7 @@ async function loadBranches() {
         if (res.status === 200) {
             branches = await res.json();
         }
-
+        
         displayBranches(branches);
     } catch (error) {
         showError("Failed to load branches");
@@ -280,26 +280,30 @@ function selectBranch(branchName) {
 
 async function loadFiles() {
     try {
-        // Simulate API call to get repository files
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        if(selectBranch === null) return;
+        const res = await fetch(`http://localhost:8000/user/get-files/${selectedBranch}/${repoName}`,{
+            method:'GET',
+            credentials:'include'
+        })
+        if(res.status === 200){
+            const filesJSON = await res.json()
+            const tree = filesJSON.tree
+        
+            files = []
+            for (const file of tree){
+                if(file.type === "blob"){
+                    files.push({
+                        path:file.path,
+                        type:"file",
+                        size:file.size || 0
+                    })
+                }
+            }
 
-        // Mock files data
-        files = [
-            { path: "src/index.js", type: "file", size: 2048 },
-            { path: "src/components/Header.js", type: "file", size: 1024 },
-            { path: "src/components/Footer.js", type: "file", size: 512 },
-            { path: "src/styles/main.css", type: "file", size: 4096 },
-            { path: "src/styles/responsive.css", type: "file", size: 2048 },
-            { path: "src/utils/helpers.js", type: "file", size: 1536 },
-            { path: "src/api/client.js", type: "file", size: 3072 },
-            { path: "src/hooks/useAuth.js", type: "file", size: 1024 },
-            { path: "package.json", type: "file", size: 1024 },
-            { path: "README.md", type: "file", size: 2048 },
-            { path: "webpack.config.js", type: "file", size: 1536 },
-            { path: ".gitignore", type: "file", size: 256 },
-        ];
-
-        displayFiles(files);
+            displayFiles(files);
+        } else {
+            showError("Failed to load repository files")
+        }
     } catch (error) {
         showError("Failed to load repository files");
     }
