@@ -53,7 +53,7 @@ class AIJobsManager {
             console.log(user);
             const username = user.username;
             const response = await fetch(
-                `http://localhost:8000/githubapp/get-repos/${username}`,
+                `http://localhost:8000/githubapp/get-installed-repos/${username}`,
                 {
                     method: "GET",
                     headers: {

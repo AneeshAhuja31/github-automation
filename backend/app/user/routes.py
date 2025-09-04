@@ -75,11 +75,10 @@ async def get_issues(repo:str,user_token_info:UserTokenInfo = Depends(verify_tok
         return issue_response
         
     except Exception as e:
-        raise HTTPException(status_code=500,detail="Error fetching issues")
+        raise HTTPException(status_code=500,detail=f"{e}")
     
-@router.get("/check-repo/{repo}")
-async def check_if_user_exist(repo:str,user_token_info:UserTokenInfo = Depends(verify_token)):
-    username = user_token_info.username
+@router.get("/check-repo/{username}/{repo}")
+async def check_if_user_exist(username:str,repo:str):
     async with httpx.AsyncClient() as client:
         response = await client.get(f"https://api.github.com/repos/{username}/{repo}")
     

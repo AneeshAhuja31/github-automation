@@ -52,7 +52,7 @@ async def install_app_on_repo(repo_owner: str, user_data: UserTokenInfo = Depend
         print(f"Error generating install URL: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate install URL")
 
-@router.get("/get-repos/{username}")
+@router.get("/get-installed-repos/{username}")
 async def get_repos(username:str):
     installation_id = await get_installation_id(username)
     jwt_token = await generate_jwt_for_githubapp_access()

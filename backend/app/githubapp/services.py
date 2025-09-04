@@ -15,9 +15,12 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 async def generate_jwt_for_githubapp_access():
     payload = {
         "iat":int(time.time()) - 60,
-        "exp":int(time.time()) + (10 * 60),
+        "exp":int(time.time()) + (5 * 60),
         "iss":GITHUB_APP_ID
     }
+    print("mmmmmmmmmmmmmmmm")
+    print(jwt.encode(payload,GITHUB_PRIVATE_KEY,algorithm="RS256"))
+    print("mmmmmmmmmmmmmmmm")
     return jwt.encode(payload,GITHUB_PRIVATE_KEY,algorithm="RS256")
 
 async def get_githubapp_installation_token(installation_id:str,token:str,username:str):
@@ -27,14 +30,22 @@ async def get_githubapp_installation_token(installation_id:str,token:str,usernam
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(f"https://api.github.com/app/installations/{installation_id}/access_tokens",headers=headers)
-        if response.status_code >= 400 and response.status_code<=500:
-            print(response.status_code)
+        if response.status_code >= 400:  
+            print(f"GitHub API Error: {response.status_code}")
             print(response.json())
-            del_installation_id_response = await delete_installation_id(username)
+            await delete_installation_id(username)
             return None
+        
+        if response.status_code != 201: 
+            print(f"Unexpected status code: {response.status_code}")
+            return None
+            
     response_json = response.json()
-    github_app_installation_token = response_json["token"]
-    return github_app_installation_token
+    if "token" not in response_json:
+        print("No token in response")
+        return None
+        
+    return response_json["token"]
 
 async def get_repos_with_app_access(github_app_installation_token:str) -> list:
     headers = {
@@ -43,6 +54,7 @@ async def get_repos_with_app_access(github_app_installation_token:str) -> list:
     }
     async with httpx.AsyncClient() as client:
         response = await client.get("https://api.github.com/installation/repositories?per_page=100",headers=headers)
+    print(response.json())
     repositories = response.json()["repositories"]
     cleaned_repositories = [
         {
@@ -52,3 +64,12 @@ async def get_repos_with_app_access(github_app_installation_token:str) -> list:
     ]
     print(len(repositories))
     return cleaned_repositories
+
+async def check_app_installed_on_repo(github_app_installation_token:str,owner:str,repo:str) -> bool:
+    headers = {
+        "Authorization": f"Bearer {github_app_installation_token}",
+        "Accept": "application/vnd.github+json"
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://api.github.com/repos/{owner}/{repo}/installation",headers=headers)
+    return response.status_code == 200

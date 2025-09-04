@@ -3,9 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create-Job</title>
+    <title>Create AI Job - ForkLift</title>
+    <link href="assets/css/create-jobs.css" rel="stylesheet">
+    <script src="assets/js/checkauth_w_logout.js"></script>
+    <script src="assets/js/create-jobs.js"></script>
+    
 </head>
 <body>
+    <div class="header">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" fill="currentColor"/>
+                </svg>
+                <span>ForkLift</span>
+            </a>
+            <a href="jobs.html" class="back-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+                Back to Jobs
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- Progress Sidebar -->
+            <div class="progress-sidebar">
+                <div class="repo-info">
+                    <div class="repo-name" id="repoName">Loading...</div>
+                    <div class="repo-description" id="repoDescription">Loading repository information...</div>
+                </div>
+
+                <ol class="progress-steps">
+                    <li class="progress-step active" data-step="1">
+                        <div class="step-indicator">1</div>
+                        <div class="step-info">
+                            <div class="step-title">Select Issue</div>
+                            <div class="step-description">Choose or create an issue</div>
+                        </div>
+                    </li>
+                    <li class="progress-step" data-step="2">
+                        <div class="step-indicator">2</div>
+                        <div class="step-info">
+                            <div class="step-title">Select Files</div>
+                            <div class="step-description">Choose relevant files</div>
+                        </div>
+                    </li>
+                    <li class="progress-step" data-step="3">
+                        <div class="step-indicator">3</div>
+                        <div class="step-info">
+                            <div class="step-title">Run Commands</div>
+                            <div class="step-description">Configure execution commands</div>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <!-- Step 1: Issue Selection -->
+                <div id="step1" class="step-content">
+                    <div class="form-header">
+                        <h1 class="form-title">Select Issue</h1>
+                        <p class="form-subtitle">Choose an existing issue or manually describe the task</p>
+                    </div>
+
+                    <div class="form-content">
+                        <div class="form-group">
+                            <label class="form-label">Issue Source</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="issueSource" value="existing" checked>
+                                    <span>Select from existing issues</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="issueSource" value="manual">
+                                    <span>Manually describe the task</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="existingIssues">
+                            <div class="search-box">
+                                <div class="search-container">
+                                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <path d="m21 21-4.35-4.35"/>
+                                    </svg>
+                                    <input type="text" id="issueSearch" class="search-input" placeholder="Search issues...">
+                                </div>
+                            </div>
+                            <div id="issuesList" class="issue-list">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                    Loading issues...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="manualIssue" style="display: none;">
+                            <div class="form-group">
+                                <label class="form-label" for="issueTitle">Issue Title</label>
+                                <input type="text" id="issueTitle" class="form-input" placeholder="Enter issue title...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="issueBody">Issue Description</label>
+                                <textarea id="issueBody" class="form-textarea" placeholder="Describe the task in detail..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-footer">
+                        <div></div>
+                        <button class="btn btn-primary" onclick="nextStep()" disabled id="step1Next">
+                            Next
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: File Selection -->
+                <div id="step2" class="step-content" style="display: none;">
+                    <div class="form-header">
+                        <h1 class="form-title">Select Files</h1>
+                        <p class="form-subtitle">Choose files relevant to this task</p>
+                    </div>
+
+                    <div class="form-content">
+                        <div class="search-box">
+                            <div class="search-container">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <path d="m21 21-4.35-4.35"/>
+                                </svg>
+                                <input type="text" id="fileSearch" class="search-input" placeholder="Search files...">
+                            </div>
+                        </div>
+                        <div id="fileTree" class="file-tree">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                Loading repository files...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-footer">
+                        <button class="btn btn-secondary" onclick="previousStep()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m15 18-6-6 6-6"/>
+                            </svg>
+                            Previous
+                        </button>
+                        <button class="btn btn-primary" onclick="nextStep()" id="step2Next">
+                            Next
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Run Commands -->
+                <div id="step3" class="step-content" style="display: none;">
+                    <div class="form-header">
+                        <h1 class="form-title">Run Commands</h1>
+                        <p class="form-subtitle">Configure commands to execute for this job</p>
+                    </div>
+
+                    <div class="form-content">
+                        <div id="commandsContainer">
+                            <div class="command-group">
+                                <div class="command-header">
+                                    <span class="command-title">Command 1</span>
+                                    <button class="remove-command" onclick="removeCommand(this)" style="display: none;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 6h18"/>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Command</label>
+                                    <input type="text" class="form-input command-input" placeholder="e.g., npm install">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Description (optional)</label>
+                                    <input type="text" class="form-input command-description" placeholder="Describe what this command does...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="add-command" onclick="addCommand()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14"/>
+                                <path d="M5 12h14"/>
+                            </svg>
+                            Add Another Command
+                        </button>
+                    </div>
+
+                    <div class="form-footer">
+                        <button class="btn btn-secondary" onclick="previousStep()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m15 18-6-6 6-6"/>
+                            </svg>
+                            Previous
+                        </button>
+                        <button class="btn btn-primary" onclick="createJob()" id="createJobBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Create Job
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     
 </body>
 </html>
