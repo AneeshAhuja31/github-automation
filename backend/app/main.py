@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from auth.routes import router as auth_router
 from user.routes import router as user_router
 from githubapp.routes import router as githubapp_router
+from job.routes import router as job_router
 import uvicorn
 import os
 from dotenv import load_dotenv
@@ -13,6 +14,7 @@ app = FastAPI()
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(githubapp_router)
+app.include_router(job_router)
 
 app.add_middleware(
     CORSMiddleware,

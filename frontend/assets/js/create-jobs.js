@@ -8,6 +8,8 @@ let repoData = null;
 let issues = [];
 let files = [];
 let commands = [];
+let envVars = [];
+let installCommand = null;
 
 document.addEventListener("DOMContentLoaded", async function () {
     const urlParams = new URLSearchParams(window.location.search);
@@ -175,7 +177,7 @@ function displayIssues(issuesToShow) {
 
 function selectIssue(issueId) {
     selectedIssue = issues.find((issue) => issue.id === issueId);
-
+    //console.log(selectIssue)
     // Update UI
     document.querySelectorAll(".issue-item").forEach((item) => {
         const checkbox = item.querySelector(".issue-checkbox");
@@ -537,17 +539,22 @@ async function createJob() {
             `;
 
     try {
+        collectEnvVars();
+        collectInstallCommand();
         collectCommands();
 
         const jobData = {
             repository: repoName,
             issue: selectedIssue,
+            branch: selectedBranch,
             files: selectedFiles,
+            envVars: envVars,
+            installCommand: installCommand,
             commands: commands,
         };
 
         // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 10000));
 
         console.log("Job created:", jobData);
 
@@ -584,5 +591,96 @@ function showError(message) {
         errorContainer.style.display = "block";
     } else {
         alert(message); 
+    }
+}
+
+function addEnvVar() {
+    const container = document.getElementById("envVarsContainer");
+    const envVarCount = container.children.length;
+    const newIndex = envVarCount + 1;
+
+    const envVarGroup = document.createElement("div");
+    envVarGroup.className = "env-var-group";
+    envVarGroup.innerHTML = `
+        <div class="env-var-header">
+            <span class="env-var-title">Environment Variable ${newIndex}</span>
+            <button class="remove-env-var" onclick="removeEnvVar(this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18"/>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                </svg>
+            </button>
+        </div>
+        <div class="env-var-inputs">
+            <div class="form-group">
+                <label class="form-label">Variable Name</label>
+                <input type="text" class="form-input env-var-key" placeholder="e.g., NODE_ENV, API_KEY">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Variable Value</label>
+                <input type="text" class="form-input env-var-value" placeholder="Enter the value...">
+            </div>
+        </div>
+    `;
+
+    container.appendChild(envVarGroup);
+    updateRemoveEnvVarButtons();
+}
+
+function removeEnvVar(button) {
+    const envVarGroup = button.closest(".env-var-group");
+    envVarGroup.remove();
+    updateEnvVarTitles();
+    updateRemoveEnvVarButtons();
+}
+
+function updateEnvVarTitles() {
+    const envVarGroups = document.querySelectorAll(".env-var-group");
+    envVarGroups.forEach((group, index) => {
+        const title = group.querySelector(".env-var-title");
+        title.textContent = `Environment Variable ${index + 1}`;
+    });
+}
+
+function updateRemoveEnvVarButtons() {
+    const envVarGroups = document.querySelectorAll(".env-var-group");
+    const removeButtons = document.querySelectorAll(".remove-env-var");
+
+    removeButtons.forEach((button) => {
+        button.style.display = envVarGroups.length > 0 ? "block" : "none";
+    });
+}
+
+// ...existing code...
+
+function collectEnvVars() {
+    const envVarGroups = document.querySelectorAll(".env-var-group");
+    envVars = [];
+
+    envVarGroups.forEach((group) => {
+        const keyInput = group.querySelector(".env-var-key").value.trim();
+        const valueInput = group.querySelector(".env-var-value").value.trim();
+
+        if (keyInput && valueInput) {
+            envVars.push({
+                key: keyInput,
+                value: valueInput,
+            });
+        }
+    });
+}
+
+function collectInstallCommand() {
+    const commandInput = document.getElementById("installCommand").value.trim();
+    const descriptionInput = document.getElementById("installDescription").value.trim();
+
+    if (commandInput) {
+        installCommand = {
+            command: commandInput,
+            description: descriptionInput || "",
+        };
+    } else {
+        installCommand = null;
     }
 }

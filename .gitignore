@@ -1,5 +1,6 @@
 *.env
 **/__pycache__/
+.vscode/
 myrepos.json
 repo_test.py
 try.html

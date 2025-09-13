@@ -229,43 +229,85 @@
                     </div>
 
                     <!-- Step 4: Run Commands -->
+                    <!-- Step 4: Run Commands -->
                     <div id="step4" class="step-content" style="display: none;">
                         <div class="form-header">
-                            <h1 class="form-title">Run Commands</h1>
-                            <p class="form-subtitle">Configure commands to execute for this job</p>
+                            <h1 class="form-title">Configure Execution</h1>
+                            <p class="form-subtitle">Set up environment variables and commands for this job</p>
                         </div>
 
                         <div class="form-content">
-                            <div id="commandsContainer">
-                                <div class="command-group">
-                                    <div class="command-header">
-                                        <span class="command-title">Command 1</span>
-                                        <button class="remove-command" onclick="removeCommand(this)" style="display: none;">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M3 6h18"/>
-                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Command</label>
-                                        <input type="text" class="form-input command-input" placeholder="e.g., npm install">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Description (optional)</label>
-                                        <input type="text" class="form-input command-description" placeholder="Describe what this command does...">
-                                    </div>
+                            <!-- Environment Variables Section -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h3 class="section-title">Environment Variables (Optional)</h3>
+                                    <p class="section-description">Add environment variables that will be available during execution</p>
+                                </div>
+                                <div id="envVarsContainer">
+                                    <!-- Environment variables will be added here -->
+                                </div>
+                                <button type="button" class="add-env-var" onclick="addEnvVar()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14"/>
+                                        <path d="M5 12h14"/>
+                                    </svg>
+                                    Add Environment Variable
+                                </button>
+                            </div>
+
+                            <!-- Install Command Section -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h3 class="section-title">Install Command (Optional)</h3>
+                                    <p class="section-description">Command to install dependencies before running other commands</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="installCommand">Install Command</label>
+                                    <input type="text" id="installCommand" class="form-input" placeholder="e.g., npm install, pip install -r requirements.txt">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="installDescription">Description (optional)</label>
+                                    <input type="text" id="installDescription" class="form-input" placeholder="Describe what this install command does...">
                                 </div>
                             </div>
 
-                            <button class="add-command" onclick="addCommand()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 5v14"/>
-                                    <path d="M5 12h14"/>
-                                </svg>
-                                Add Another Command
-                            </button>
+                            <!-- Run Commands Section -->
+                            <div class="form-section">
+                                <div class="section-header">
+                                    <h3 class="section-title">Run Commands</h3>
+                                    <p class="section-description">Commands to execute for this job</p>
+                                </div>
+                                <div id="commandsContainer">
+                                    <div class="command-group">
+                                        <div class="command-header">
+                                            <span class="command-title">Command 1</span>
+                                            <button class="remove-command" onclick="removeCommand(this)" style="display: none;">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 6h18"/>
+                                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Command</label>
+                                            <input type="text" class="form-input command-input" placeholder="e.g., npm start, python main.py">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Description (optional)</label>
+                                            <input type="text" class="form-input command-description" placeholder="Describe what this command does...">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="add-command" onclick="addCommand()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14"/>
+                                        <path d="M5 12h14"/>
+                                    </svg>
+                                    Add Another Command
+                                </button>
+                            </div>
                         </div>
 
                         <div class="form-footer">
