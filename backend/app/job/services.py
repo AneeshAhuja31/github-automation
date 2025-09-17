@@ -35,7 +35,7 @@ async def fetch_entire_repo(username:str,repo_name:str,access_token:str,branch:s
                         
                         if file_response.status_code == 200:
                             file_data = file_response.json()
-                            content = base64.b64encode(file_data['content']).decode('utf-8',errors='ignore')
+                            content = base64.b64decode(file_data['content']).decode('utf-8',errors='ignore')
                             
                             files_data.append({
                                 'path':file_path,
@@ -47,7 +47,7 @@ async def fetch_entire_repo(username:str,repo_name:str,access_token:str,branch:s
                     except Exception as e:
                         print(f"Error fetching {file_path}: {e}")
                         continue
-    return file_data
+    return files_data
 
 class CodePreprocessor:
     def __init__(self):

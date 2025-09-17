@@ -544,7 +544,7 @@ async function createJob() {
         collectCommands();
 
         const jobData = {
-            repository: repoName,
+            repo_name: repoName,
             issue: selectedIssue,
             branch: selectedBranch,
             files: selectedFiles,
@@ -552,10 +552,15 @@ async function createJob() {
             installCommand: installCommand,
             commands: commands,
         };
-
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 10000));
-
+        try{
+            const response = await fetch("http://localhost:8000/job/index-repository",{
+                method:'POST',
+                credentials:'include',
+                body:JSON.stringify(jobData)
+            })
+        } catch(error){
+            console.log(`Error indexing repo ${error}`)
+        }
         console.log("Job created:", jobData);
 
         // Redirect to jobs page with success message
