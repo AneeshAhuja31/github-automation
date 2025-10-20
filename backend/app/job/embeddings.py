@@ -1,11 +1,16 @@
 from sentence_transformers import SentenceTransformer
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from typing import List,Dict,Any
+
+import os
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=True)
+
+HF_TOKEN = os.getenv("HF_TOKEN")
 class CodeEmbeddingGenerator:
     def __init__(self,model_name:str = "microsoft/codebert-base"):
-        self.model = SentenceTransformer(model_name)
-    
+        self.model = HuggingFaceEndpointEmbeddings(model=model_name,huggingfacehub_api_token=HF_TOKEN)
+        # self.model = HuggingFaceEmbeddings(model_name=model_name)
     def create_enhanced_text(self,chunk:Dict[str,Any]) -> str:
         content = chunk['content']
         file_path = chunk['file_path']
