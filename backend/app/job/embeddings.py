@@ -42,9 +42,7 @@ class CodeEmbeddingGenerator:
         """Generate embeddings for code chunks"""
         enhanced_texts = [self.create_enhanced_text(chunk) for chunk in chunks]
         
-        # Generate embeddings in batches
-        embeddings = self.model.encode(enhanced_texts, batch_size=32, show_progress_bar=True)
-        
+        embeddings = self.model.embed_documents(enhanced_texts)
         # Add embeddings to chunks
         for i, chunk in enumerate(chunks):
             chunk['embedding'] = embeddings[i].tolist()
